@@ -6,7 +6,7 @@ setup(
     name="alerta-falcon",
     version=version,
     description='Alerta Webhook for Open-Falcon',
-    url='https://github.com/alerta/alerta-contrib',
+    url='https://github.com/cxjchocolate/alerta-contrib',
     license='MIT',
     author='Kevin Cai',
     author_email='kevin.cai@nio.com',
