@@ -15,17 +15,17 @@ class FalconWebhook(WebhookBase):
             # Default parameters
             environment = payload.get('environment', 'prod')
             region = payload.get('region', 'bjaws')
-            severity = payload["priority"]
-            status = payload["status"]
+            severity = payload.get("priority", "P0")
+            status = payload.get("status", "unknown")
             group = 'Falcon'
-            tags = payload["tags"].split(',')
-            resource = payload["endpoint"]
-            event = payload["metric"]
+            tags = payload.get("tags", "").split(',')
+            resource = payload.get("endpoint", "")
+            event = payload.get("metric")
             service = ['Falcon']
-            text = payload["text"]
+            text = payload.get("text")
             attributes = {"region": region}
             origin = 'Falcon'
-            create_time = self.formatTime(payload["time"])
+            create_time = self.formatTime(payload.get("time"))
 
             if status == 'OK':
                 severity = 'ok'
@@ -38,7 +38,7 @@ class FalconWebhook(WebhookBase):
                 service=service,
                 create_time=create_time,
                 group=group,
-                value=payload["left_value"],
+                value=payload.get("left_value", 0),
                 text=text,
                 tags=tags,
                 attributes=attributes,
