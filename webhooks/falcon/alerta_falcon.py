@@ -1,9 +1,9 @@
 
-from alerta.models.alert import Alert
-from alerta.webhooks import WebhookBase
 import json
 import time
 import datetime
+from alerta.models.alert import Alert
+from alerta.webhooks import WebhookBase
 
 
 class FalconWebhook(WebhookBase):
@@ -11,19 +11,19 @@ class FalconWebhook(WebhookBase):
     def incoming(self, query_string, payload):
 
         # Default parameters
-        environment = query_string.get('environment', 'prod')
-        region = query_string.get('region', 'bjaws')
-        severity = query_string["priority"]
-        status = query_string["status"]
+        environment = payload.get('environment', 'prod')
+        region = payload.get('region', 'bjaws')
+        severity = payload["priority"]
+        status = payload["status"]
         group = 'Falcon'
-        tags = query_string["tags"].split(',')
-        resource = query_string["endpoint"]
-        event = query_string["metric"]
+        tags = payload["tags"].split(',')
+        resource = payload["endpoint"]
+        event = payload["metric"]
         service = ['Falcon']
-        text = 'nothing'
+        text = payload["text"]
         attributes = {"region": region}
         origin = 'Falcon'
-        create_time = self.formatTime(query_string["time"])
+        create_time = self.formatTime(payload["time"])
 
         if status == 'OK':
             severity = 'ok'
@@ -41,7 +41,7 @@ class FalconWebhook(WebhookBase):
             tags=tags,
             attributes=attributes,
             origin=origin,
-            raw_data=json.dumps(query_string, indent=4)
+            raw_data=json.dumps(payload, indent=4)
         )
 
     @classmethod
