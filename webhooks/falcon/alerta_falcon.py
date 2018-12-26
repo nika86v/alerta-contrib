@@ -25,7 +25,7 @@ class FalconWebhook(WebhookBase):
             text = payload.get("text")
             attributes = {"region": region}
             origin = 'Falcon'
-            create_time = self.formatTime(payload.get("time"))
+            create_time = payload.get("time")
 
             if status == 'OK':
                 severity = 'ok'
@@ -47,7 +47,3 @@ class FalconWebhook(WebhookBase):
             )
         except:
             traceback.print_exc()
-
-    @classmethod
-    def formatTime(cls, s):
-        return int(time.mktime(datetime.datetime.strptime(s, "%Y-%m-%d %H:%M:%S").timetuple()))
