@@ -25,7 +25,7 @@ class FalconWebhook(WebhookBase):
             text = payload.get("text")
             attributes = {"region": region}
             origin = 'Falcon'
-            create_time = payload.get("time")
+            # create_time = payload.get("time")
 
             if status == 'OK':
                 severity = 'ok'
@@ -36,7 +36,7 @@ class FalconWebhook(WebhookBase):
                 environment=environment,
                 severity=severity,
                 service=service,
-                create_time=create_time,
+                # create_time=create_time,
                 group=group,
                 value=payload.get("left_value", 0),
                 text=text,
