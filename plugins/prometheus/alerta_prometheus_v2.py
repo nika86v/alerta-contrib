@@ -65,7 +65,7 @@ class AlertmanagerSilence(PluginBase):
                 NIO_DEFAULT_ALERTMANAGER_API_URL = "alertIP1"
             elif res_dict.get("env","") == "prod" and res_dict.get("region","") == 'bjaws':
                 NIO_DEFAULT_ALERTMANAGER_API_URL = "alertIP2"
-            elif res_dict.get("env","") and res_dict.get("region","") == 'shbs':
+            elif res_dict.get("env","") == "test" and res_dict.get("region","") == 'shbs':
                 NIO_DEFAULT_ALERTMANAGER_API_URL = "alertIP3"
             elif res_dict.get("env","") == "prod" and res_dict.get("region","") == 'shtc':
                 NIO_DEFAULT_ALERTMANAGER_API_URL = "alertIP4"
