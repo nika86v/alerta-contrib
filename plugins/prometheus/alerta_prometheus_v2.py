@@ -15,7 +15,6 @@ LOG = logging.getLogger('alerta.plugins.prometheus')
 DEFAULT_ALERTMANAGER_API_URL = 'http://localhost:9093'
 
 
-global NIO_DEFAULT_ALERTMANAGER_API_URL 
 
 ALERTMANAGER_API_URL = os.environ.get('ALERTMANAGER_API_URL') or app.config.get('ALERTMANAGER_API_URL', None)
 ALERTMANAGER_USERNAME = os.environ.get('ALERTMANAGER_USERNAME') or app.config.get('ALERTMANAGER_USERNAME', None)
@@ -61,14 +60,14 @@ class AlertmanagerSilence(PluginBase):
                 t = i.split("=")
                 res_dict[t[0]] = t[1]
 
-            if res_dict.get("env","") == "test" and res_dict.get("region","") == 'bjaws':
-                NIO_DEFAULT_ALERTMANAGER_API_URL = "alertIP1"
-            elif res_dict.get("env","") == "prod" and res_dict.get("region","") == 'bjaws':
-                NIO_DEFAULT_ALERTMANAGER_API_URL = "alertIP2"
-            elif res_dict.get("env","") == "test" and res_dict.get("region","") == 'shbs':
-                NIO_DEFAULT_ALERTMANAGER_API_URL = "alertIP3"
-            elif res_dict.get("env","") == "prod" and res_dict.get("region","") == 'shtc':
-                NIO_DEFAULT_ALERTMANAGER_API_URL = "alertIP4"
+            if alert.environment == "test" and res_dict.get("region","") == 'bjaws':
+                NIO_DEFAULT_ALERTMANAGER_API_URL = "alertA"
+            elif alert.environment == "prod" and res_dict.get("region","") == 'bjaws':
+                NIO_DEFAULT_ALERTMANAGER_API_URL = "alertB"
+            elif alert.environment == "test" and res_dict.get("region","") == 'shbs':
+                NIO_DEFAULT_ALERTMANAGER_API_URL = "alertC"
+            elif alert.environment == "prod" and res_dict.get("region","") == 'shtc':
+                NIO_DEFAULT_ALERTMANAGER_API_URL = "alertD"
             else:
                 NIO_DEFAULT_ALERTMANAGER_API_URL = ""
 
@@ -93,8 +92,10 @@ class AlertmanagerSilence(PluginBase):
 
 
             #base_url = ALERTMANAGER_API_URL or alert.attributes.get('externalUrl', DEFAULT_ALERTMANAGER_API_URL)
-            
-            url = NIO_DEFAULT_ALERTMANAGER_API_URL + '/api/v1/silences'
+            if NIO_DEFAULT_ALERTMANAGER_API_URL:
+                url = NIO_DEFAULT_ALERTMANAGER_API_URL + '/api/v1/silences'
+            else:
+                return "Not match Alertmanager url"
 
             LOG.debug('Alertmanager: URL=%s', url)
             LOG.debug('Alertmanager: data=%s', data)
@@ -120,7 +121,29 @@ class AlertmanagerSilence(PluginBase):
             silenceId = alert.attributes.get('silenceId', None)
             if silenceId:
                 #base_url = ALERTMANAGER_API_URL or alert.attributes.get('externalUrl', DEFAULT_ALERTMANAGER_API_URL)
-                url = NIO_DEFAULT_ALERTMANAGER_API_URL + '/api/v1/silence/%s' % silenceId
+                res_dict = {}
+
+                for i in alert.tags:
+                    t = i.split("=")
+                    res_dict[t[0]] = t[1]
+
+                
+                if alert.environment == "test" and res_dict.get("region","") == 'bjaws':
+                    NIO_DEFAULT_ALERTMANAGER_API_URL = "alertA"
+                elif alert.environment == "prod" and res_dict.get("region","") == 'bjaws':
+                    NIO_DEFAULT_ALERTMANAGER_API_URL = "alertB"
+                elif alert.environment == "test" and res_dict.get("region","") == 'shbs':
+                    NIO_DEFAULT_ALERTMANAGER_API_URL = "alertC"
+                elif alert.environment == "prod" and res_dict.get("region","") == 'shtc':
+                    NIO_DEFAULT_ALERTMANAGER_API_URL = "alertD"
+                else:
+                    NIO_DEFAULT_ALERTMANAGER_API_URL = ""
+
+                if NIO_DEFAULT_ALERTMANAGER_API_URL:
+                    url = NIO_DEFAULT_ALERTMANAGER_API_URL + '/api/v1/silence/%s' % silenceId
+                else:
+                    return "Not match Alertmanager url"
+
                 try:
                     r = requests.delete(url, auth=self.auth, timeout=2)
                 except Exception as e:
@@ -134,6 +157,3 @@ class AlertmanagerSilence(PluginBase):
                 LOG.debug('Alertmanager: Removed silenceId %s from attributes', silenceId)
 
         return alert, status, text
-
-
-
